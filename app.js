@@ -207,6 +207,8 @@ const FIG_RULES=[
 {m:/<h3>(?:Chilled water|Chillers?)/i,f:'chill'},
 {m:/<h3>(?:Electronic symbols)/i,f:'elsym'}
 ];
+if(window.FR)FR.forEach(r=>FIG_RULES.push(r));
+if(window.MF)Object.keys(MF).forEach(id=>{const m=M.find(x=>x.id===id);if(m){m.f=m.f||[];MF[id].forEach(k=>{if(!m.f.includes(k))m.f.push(k)})}});
 function renderLesson(m){
 const allowed=new Set(m.f||[]),used=new Set();
 const parts=(m.n||'').split(/(?=<h3>)/i);
