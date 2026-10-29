@@ -255,6 +255,89 @@ b+=tag(8,536,'Typical layout. Wire colours and part positions vary by maker.')+t
 F.fridgewire=S('0 0 470 560',b,'Refrigerator wiring diagram showing every wire and its connection');
 })();
 
+
+// ---------- frost-free refrigerator wiring: ladder layout with a live rail and a neutral rail ----------
+(function(){
+const BR='#8a4b24',BL='#2a60c0',GY='#4cae4c';
+const w=(d,c,n)=>`<path d="${d}" fill="none" stroke="#14171a" stroke-width="5.4" stroke-linecap="round" stroke-linejoin="round"/><path d="${d}" fill="none" stroke="${c}" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>${n==='gy'?`<path d="${d}" fill="none" stroke="#e8d34a" stroke-width="3.2" stroke-dasharray="5 5"/>`:''}`;
+const dot=(x,y)=>`<circle cx="${x}" cy="${y}" r="3.6" style="fill:#14171a;stroke:#fff;stroke-width:1"/>`;
+const bd=(x,y,n)=>`<circle cx="${x}" cy="${y}" r="8.5" style="fill:#b3261e;stroke:#fff;stroke-width:1.2"/><text x="${x}" y="${y+3.6}" text-anchor="middle" style="fill:#fff;font-size:10px;font-weight:700">${n}</text>`;
+const term=(x,y)=>`<circle cx="${x}" cy="${y}" r="3.2" style="fill:#e6c263;stroke:#6b5518;stroke-width:1"/>`;
+const tag=(x,y,t,a)=>`<text x="${x}" y="${y}"${a?` text-anchor="${a}"`:''} style="font-size:10.5px;font-weight:600">${t}</text>`;
+const dk=(x,y,t,a)=>`<text x="${x}" y="${y}"${a?` text-anchor="${a}"`:''} style="font-size:10px;font-weight:700;fill:#12303f">${t}</text>`;
+const lab=(x,y,t)=>`<rect x="${x-9}" y="${y-8}" width="18" height="13" rx="6" style="fill:#fff;fill-opacity:.92"/><text x="${x}" y="${y+2}" text-anchor="middle" style="fill:#12303f;font-size:10.5px;font-weight:800">${t}</text>`;
+const switchBox=(cx,y)=>R(cx-18,y,36,24,4,'url(#ctDark)','#1f2327')+`<path d="M${cx-10} ${y+12}H${cx+4}L${cx+12} ${y+5}" stroke="#cfd4da" stroke-width="3" stroke-linecap="round"/>`+term(cx,y)+term(cx,y+24);
+let b='';
+// ---- wires ----
+b+=w('M54 202H66V36H300',BR);                              // 1 live rail
+b+=w('M110 36V58M110 82V215',BR);                           // 2 lamp branch
+b+=w('M170 36V214',BR);                                     // 3 timer motor
+b+=w('M295 36V64',BR);                                      // 4 timer common
+b+=w('M320 120V146H400V160M320 146V160',BR);                // 5 cooling bus
+b+=w('M400 186V200H438V254',BR);                            // 6 thermostat to R
+b+=w('M384 228V240H415V248M410 228H438',BR);                // 7 PTC links
+b+=w('M270 120V134H230V158',BR);                            // 8 defrost feed
+b+=w('M230 182V200M230 216V236',BR);
+b+=w('M54 226H78V396H400',BL);                              // 9 neutral rail
+b+=w('M110 245V396M170 246V396M230 306V396M320 268V396',BL);// 10 neutral returns
+b+=w('M392 396V383M392 361V262',BL);                        // 11 overload to C
+b+=w('M54 178V14H525V306H483',GY,'gy');                      // 12 earth to dome
+b+=w('M525 306V420',GY,'gy');
+b+=w('M320 184V224',BR);                                    // fan switch to fan
+b+=dot(110,36)+dot(170,36)+dot(295,36)+dot(110,396)+dot(170,396)+dot(230,396)+dot(320,396)+dot(392,396)+dot(320,146)+dot(400,146)+dot(438,228)+dot(525,306);
+// ---- plug ----
+b+=R(6,164,48,76,8,'url(#ctWhite)','#9aa2aa')+[178,202,226].map(y=>`<rect x="0" y="${y-3}" width="9" height="6" rx="2" style="fill:url(#ctMetal);stroke:#59626b"/>`).join('');
+b+=tag(30,258,'Mains plug','middle')+tag(32,182,'E','middle')+tag(32,206,'L','middle')+tag(32,230,'N','middle');
+// ---- lamp branch ----
+b+=switchBox(110,58)+tag(132,68,'Door')+tag(132,80,'switch');
+b+=C(110,230,15,'#fff7d0','#b8a14a')+'<path d="M104 237V230L107 225L110 230L113 225L116 230V237" fill="none" stroke="#c0392b" stroke-width="1.6"/>'+tag(124,256,'Lamp');
+// ---- timer motor ----
+b+=C(170,230,16,'url(#ctDark)','#101214')+'<text x="170" y="235" text-anchor="middle" style="fill:#fff;font-size:13px;font-weight:700">M</text>'+tag(192,226,'Timer')+tag(192,238,'motor');
+// ---- defrost timer ----
+b+=R(250,64,100,56,6,'url(#ctWhite)','#9aa2aa')+term(295,64)+term(270,120)+term(320,120)+
+ '<path d="M295 76L318 106" stroke="#12303f" stroke-width="2.6" stroke-linecap="round"/><circle cx="295" cy="76" r="3" style="fill:#12303f"/><circle cx="270" cy="108" r="3" style="fill:#fff;stroke:#12303f"/><circle cx="320" cy="108" r="3" style="fill:#12303f"/>'+
+ tag(246,84,'Defrost timer','end')+tag(286,78,'1','end')+tag(262,134,'2','end')+tag(330,134,'3','start')+'<text x="270" y="116" text-anchor="middle" style="font-size:9px;font-weight:700;fill:#12303f">defrost</text><text x="322" y="116" text-anchor="middle" style="font-size:9px;font-weight:700;fill:#12303f">cooling</text>';
+// ---- defrost branch ----
+b+=R(212,158,36,26,13,'url(#ctMetal)','#59626b')+'<path d="M222 177Q230 163 238 177" fill="none" stroke="#12303f" stroke-width="2"/>'+term(230,158)+term(230,184)+
+ tag(250,168,'Defrost',null)+tag(250,180,'thermostat',null);
+b+=R(216,200,28,16,3,'url(#ctMetal)','#59626b')+'<path d="M222 208H238" stroke="#12303f" stroke-width="1.6"/>'+tag(250,208,'Thermal')+tag(250,220,'fuse');
+b+=R(218,236,24,70,10,'#f6e9d0','#a89060')+'<path d="M224 244H236L224 254H236L224 264H236L224 274H236L224 284H236L224 294H236" fill="none" stroke="#e8913a" stroke-width="2.4" stroke-linejoin="round"/>'+term(230,236)+term(230,306)+tag(250,266,'Defrost')+tag(250,278,'heater');
+// ---- evaporator fan branch ----
+b+=switchBox(320,160).replace('x="302"','x="305"').replace('width="36"','width="30"')+tag(328,200,'Fan')+tag(328,212,'switch');
+b+=fan(320,246,20,5)+tag(290,242,'Evap.','end')+tag(290,254,'fan','end');
+// ---- thermostat ----
+b+=R(382,160,36,26,6,'url(#ctWhite)','#9aa2aa')+C(400,173,8,'url(#ctMetal)','#59626b')+term(400,160)+term(400,186)+tag(424,172,'Thermostat');
+// ---- compressor ----
+b+=`<ellipse cx="415" cy="306" rx="68" ry="44" style="fill:url(#ctMetal);stroke:#3b4148;stroke-width:1.5"/>`+R(375,236,90,40,8,'url(#ctDark)','#101214')+
+ R(372,206,50,22,5,'#2a2f35','#101214')+'<text x="397" y="221" text-anchor="middle" style="fill:#fff;font-size:10px;font-weight:700">PTC start</text>'+term(384,228)+term(410,228)+
+ [[392,262,'C'],[415,248,'S'],[438,262,'R']].map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="8" style="fill:url(#ctBrass);stroke:#6b5518;stroke-width:1.3"/><circle cx="${p[0]}" cy="${p[1]}" r="3" style="fill:#2a2f35"/>${lab(p[0]+(p[2]=='S'?20:0),p[1]+(p[2]=='S'?-2:20),p[2])}`).join('')+
+ C(483,306,5,'#4cae4c','#2a6a2a')+dk(445,324,'Compressor','middle');
+// ---- overload ----
+b+=C(392,372,11,'url(#ctDark)','#101214')+'<path d="M386 372H398" stroke="#cfd4da" stroke-width="2"/>'+tag(376,374,'Overload','end')+tag(376,386,'(OLP)','end');
+// ---- fridge body earth ----
+b+='<path d="M525 420V428M513 428H537M517 434H533M521 440H529" stroke="#14171a" stroke-width="2.4" stroke-linecap="round"/>'+tag(536,454,'Fridge body','end');
+// ---- badges ----
+b+=bd(66,110,1)+bd(110,122,2)+bd(170,122,3)+bd(295,50,4)+bd(360,146,5)+bd(420,198,6)+bd(398,236,7)+bd(250,134,8)+bd(78,330,9)+bd(270,396,10)+bd(392,320,11)+bd(300,14,12);
+// ---- legend ----
+const L=[
+ [1,BR,'Brown, live: plug L to the live rail'],
+ [2,BR,'Brown: live rail, door switch, lamp'],
+ [3,BR,'Brown: live rail to the timer motor (runs all the time)'],
+ [4,BR,'Brown: live rail to timer terminal 1 (common)'],
+ [5,BR,'Brown, cooling: timer 3 to thermostat and fan switch'],
+ [6,BR,'Brown: thermostat to compressor R'],
+ [7,BR,'Short links: PTC to S and PTC to R'],
+ [8,BR,'Brown, defrost: timer 2 to defrost thermostat, fuse, heater'],
+ [9,BL,'Blue, neutral: plug N to the neutral rail'],
+ [10,BL,'Blue: neutral rail to lamp, motor, heater and fan'],
+ [11,BL,'Blue: neutral rail through overload to compressor C'],
+ [12,GY,'Green/yellow, earth: plug E to dome and fridge body']
+];
+L.forEach((r,i)=>{const y=486+i*20;b+=bd(18,y,r[0])+`<rect x="34" y="${y-2}" width="22" height="5" rx="2" style="fill:${r[1]};stroke:#14171a;stroke-width:.8"/>`+(r[0]==12?`<rect x="34" y="${y-2}" width="22" height="5" rx="2" style="fill:none;stroke:#e8d34a;stroke-width:5;stroke-dasharray:4 4"/>`:'')+tag(64,y+3,r[2])});
+b+=tag(8,740,'The timer switches between cooling (3) and defrost (2): the compressor')+tag(8,754,'and fan are off while the heater is on. Colours and layout vary by maker.');
+F.fridgefrost=S('0 0 540 768',b,'Frost-free refrigerator wiring diagram showing every wire and its connection');
+})();
+
 Object.assign(Z.figs,F);
 
 Z.names=Z.names||{};Z.tasks=Z.tasks||{};
@@ -266,4 +349,10 @@ window.MF=window.MF||{};
 ['c1d','elec','fault','dom'].forEach(id=>{MF[id]=(MF[id]||[]).concat(['fridgewire'])});
 window.FR=window.FR||[];
 FR.push({m:/<h3>(?:Reading wiring diagrams|Refrigerator circuit|Domestic fridge cycle)/i,f:'fridgewire'});
+
+Z.names.fridgefrost='Frost-free refrigerator wiring: timer, heater and fan';
+Z.tasks.fridgefrost='Trace the cooling path (timer 3) and the defrost path (timer 2). Say which parts are on in each mode.';
+if(Z.marks)Z.marks.fridgefrost=['Timer motor runs all the time','Terminal 3 feeds thermostat, compressor and evaporator fan','Terminal 2 feeds defrost thermostat, thermal fuse and heater','Compressor and fan are off during defrost','Earth goes to the dome and the fridge body'];
+['elec','fault','dom'].forEach(id=>{MF[id]=(MF[id]||[]).concat(['fridgefrost'])});
+FR.push({m:/<h3>(?:Direct-cool vs frost-free|Frost-free)/i,f:'fridgefrost'});
 })();
