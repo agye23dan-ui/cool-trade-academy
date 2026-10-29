@@ -193,5 +193,77 @@ F.flames=S('0 0 430 135',
  torch(292)+flame(292,2)+T(298,108,'Oxidizing','start','fill:#e6f2f7')+T(298,122,'short, hissing, excess O₂','start','fill:#b8d0dc;font-weight:400'),
  'Three oxy-acetylene flames');
 
+
+// ---------- refrigerator wiring: a pictorial diagram that shows every wire and where it connects ----------
+(function(){
+const BR='#8a4b24',BL='#2a60c0',GY='#4cae4c';
+const w=(d,c,n)=>`<path d="${d}" fill="none" stroke="#14171a" stroke-width="5.4" stroke-linecap="round" stroke-linejoin="round"/><path d="${d}" fill="none" stroke="${c}" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>${n==='gy'?`<path d="${d}" fill="none" stroke="#e8d34a" stroke-width="3.2" stroke-dasharray="5 5" stroke-linecap="butt"/>`:''}`;
+const dot=(x,y)=>`<circle cx="${x}" cy="${y}" r="3.6" style="fill:#14171a;stroke:#fff;stroke-width:1"/>`;
+const bd=(x,y,n)=>`<circle cx="${x}" cy="${y}" r="8.5" style="fill:#b3261e;stroke:#fff;stroke-width:1.2"/><text x="${x}" y="${y+3.6}" text-anchor="middle" style="fill:#fff;font-size:10px;font-weight:700">${n}</text>`;
+const term=(x,y)=>`<circle cx="${x}" cy="${y}" r="3.2" style="fill:#e6c263;stroke:#6b5518;stroke-width:1"/>`;
+const tag=(x,y,t,a)=>`<text x="${x}" y="${y}"${a?` text-anchor="${a}"`:''} style="font-size:10px;font-weight:600">${t}</text>`;
+const lab=(x,y,t)=>`<rect x="${x-9}" y="${y-8}" width="18" height="13" rx="6" style="fill:#fff;fill-opacity:.92"/><text x="${x}" y="${y+2}" text-anchor="middle" style="fill:#12303f;font-size:10.5px;font-weight:800">${t}</text>`;
+let b='';
+// wires first, so the parts sit on top of them
+b+=w('M54 142H78',BR);
+b+=w('M78 142V52H112',BR);
+b+=w('M202 52H232V40H455V166H426',BR);
+b+=w('M78 142H130',BR);
+b+=w('M180 142H200',BR);
+b+=w('M54 166H259',BL);
+b+=w('M240 142V166',BL);
+b+=w('M287 166H345',BL);
+b+=w('M370 94V106H385V132',BR);
+b+=w('M412 94V104H440V166',BR);
+b+=w('M54 190H310V246H330',GY,'gy');
+b+=w('M200 190V236',GY,'gy');
+b+=dot(78,142)+dot(240,166)+dot(440,166)+dot(200,190);
+// plug and cord
+b+=R(6,126,48,86,8,'url(#ctWhite)','#9aa2aa')+[142,166,190].map(y=>`<rect x="0" y="${y-3}" width="9" height="6" rx="2" style="fill:url(#ctMetal);stroke:#59626b"/>`).join('');
+b+=tag(30,120,'Mains plug','middle')+tag(32,146,'L','middle')+tag(32,170,'N','middle')+tag(32,194,'E','middle');
+// thermostat
+b+=R(112,26,90,52,8,'url(#ctWhite)','#9aa2aa')+C(142,52,14,'url(#ctMetal)','#59626b')+'<path d="M142 52L150 44" stroke="#c0392b" stroke-width="3" stroke-linecap="round"/>'+'<path d="M158 40H194M158 52H194M158 64H194" stroke="#c4ccd2" stroke-width="1.2"/>'+term(112,52)+term(202,52)+tag(157,22,'Thermostat','middle')+tag(106,40,'1','end')+tag(208,40,'2','start');
+// door switch and lamp
+b+=R(130,130,50,24,4,'url(#ctDark)','#1f2327')+'<path d="M140 142H162L170 134" stroke="#cfd4da" stroke-width="3" stroke-linecap="round"/>'+term(130,142)+term(180,142)+tag(155,124,'Door switch','middle');
+b+=C(220,142,18,'#fff7d0','#b8a14a')+'<path d="M212 150V142L216 136L220 142L224 136L228 142V150" fill="none" stroke="#c0392b" stroke-width="1.8" stroke-linejoin="round"/>'+R(214,158,12,6,2,STEEL)+term(200,142)+term(240,142)+tag(220,116,'Lamp','middle');
+// overload protector
+b+=C(273,166,15,'url(#ctDark)','#101214')+'<path d="M264 166H282" stroke="#cfd4da" stroke-width="2.4"/>'+term(259,166)+term(287,166)+tag(273,210,'Overload (OLP)','middle');
+// PTC start relay
+b+=R(352,64,84,30,5,'#2a2f35','#101214')+'<text x="394" y="83" text-anchor="middle" style="fill:#fff;font-size:10px;font-weight:700">PTC start</text>'+term(370,94)+term(412,94);
+// compressor: terminal plate on top of the dome
+b+=`<ellipse cx="385" cy="262" rx="84" ry="50" style="fill:url(#ctMetal);stroke:#3b4148;stroke-width:1.5"/>`+R(326,118,108,78,8,'url(#ctDark)','#101214')+
+ [[352,166,'C'],[385,138,'S'],[418,166,'R']].map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="9" style="fill:url(#ctBrass);stroke:#6b5518;stroke-width:1.3"/><circle cx="${p[0]}" cy="${p[1]}" r="3.4" style="fill:#2a2f35"/>${lab(p[0]+(p[2]=='S'?22:0),p[1]+(p[2]=='S'?-2:22),p[2])}`).join('')+
+ C(333,246,5,'#4cae4c','#2a6a2a')+tag(385,332,'Compressor (sealed dome)','middle')+'<text x="344" y="264" style="fill:#12303f;font-size:10px;font-weight:600">Earth stud</text>';
+// fridge body earth
+b+='<path d="M200 236V244M188 244H212M192 250H208M196 256H204" stroke="#14171a" stroke-width="2.4" stroke-linecap="round"/>'+tag(200,272,'Fridge body','middle')+tag(200,284,'(earth)','middle');
+// wire number badges
+b+=bd(66,134,1)+bd(96,96,2)+bd(300,34,3)+bd(106,134,4)+bd(158,176,5)+bd(250,152,6)+bd(316,178,7)+bd(374,108,8)+bd(130,200,9);
+// legend
+const L=[
+ [1,BR,'Brown, live: plug L to the first junction'],
+ [2,BR,'Brown: junction to thermostat terminal 1'],
+ [3,BR,'Brown: thermostat terminal 2 to compressor R'],
+ [4,BR,'Brown: junction to door switch, then to the lamp'],
+ [5,BL,'Blue, neutral: plug N to the overload (OLP)'],
+ [6,BL,'Blue: lamp back to the neutral junction'],
+ [7,BL,'Blue: overload to compressor common C'],
+ [8,BR,'Short links: PTC to S and PTC to R'],
+ [9,GY,'Green/yellow, earth: plug E to dome and fridge body']
+];
+L.forEach((r,i)=>{const y=346+i*20;b+=bd(18,y,r[0])+`<rect x="34" y="${y-2}" width="22" height="5" rx="2" style="fill:${r[1]};stroke:#14171a;stroke-width:.8"/>`+(r[0]==9?`<rect x="34" y="${y-2}" width="22" height="5" rx="2" style="fill:none;stroke:#e8d34a;stroke-width:5;stroke-dasharray:4 4"/>`:'')+tag(64,y+3,r[2])});
+b+=tag(8,536,'Typical layout. Wire colours and part positions vary by maker.')+tag(8,550,'Always follow the wiring label on the fridge.');
+F.fridgewire=S('0 0 470 560',b,'Refrigerator wiring diagram showing every wire and its connection');
+})();
+
 Object.assign(Z.figs,F);
+
+Z.names=Z.names||{};Z.tasks=Z.tasks||{};
+Z.names.fridgewire='Refrigerator wiring: where every wire goes';
+Z.tasks.fridgewire='Trace each wire from the plug to the compressor and say what it connects. Then colour the live, neutral and earth wires.';
+if(Z.marks)Z.marks.fridgewire=['Live goes through the thermostat to compressor R','Neutral goes through the overload to common C','PTC start relay joins S and R','Door switch and lamp are on the live and neutral lines','Earth goes to the dome and the fridge body'];
+// show it with the schematic, in every lesson that already shows the fridge circuit, and under the same headings
+window.MF=window.MF||{};
+['c1d','elec','fault','dom'].forEach(id=>{MF[id]=(MF[id]||[]).concat(['fridgewire'])});
+window.FR=window.FR||[];
+FR.push({m:/<h3>(?:Reading wiring diagrams|Refrigerator circuit|Domestic fridge cycle)/i,f:'fridgewire'});
 })();
